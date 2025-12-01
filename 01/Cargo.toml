@@ -1,0 +1,9 @@
+[package]
+name = "advent_of_code_2025_day_1"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "Advent of Code 2025 - Day 1 solution"
+repository = "https://github.com/yourusername/advent_of_code_2025_day_1"
+
+[dependencies]
