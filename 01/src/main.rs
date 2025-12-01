@@ -28,8 +28,8 @@ fn apply_instructions(start: i32, instructions: &[(char, i32)]) -> i32 {
     let mut value = start;
     for &(dir, num) in instructions {
         match dir {
-            'L' => value = value + num,
-            'R' => value = value - num,
+            'L' => value = value - num, // Inversé : 'L' soustrait
+            'R' => value = value + num, // Inversé : 'R' ajoute
             _ => {}
         }
         value = value.rem_euclid(100);
@@ -75,15 +75,15 @@ mod tests {
     #[test]
     fn test_apply_single_instruction_parametrized() {
         let cases = vec![
-            (0, ('L', 10), 10),      // 0 + 10 = 10
-            (10, ('R', 5), 5),       // 10 - 5 = 5
-            (98, ('L', 2), 0),       // 98 + 2 = 100 % 99 = 1
-            (1, ('R', 3), 98),       // 1 - 3 = -2 rem_euclid(99) = 97
-            (0, ('R', 1), 99),       // 0 - 1 = -1 rem_euclid(99) = 98
-            (99, ('L', 1), 0),       // 99 + 1 = 100 % 99 = 1
-            (99, ('R', 1), 98),      // 99 - 1 = 98
-            (0, ('L', 99), 99),       // 0 + 99 = 99 % 99 = 0
-            (0, ('R', 99), 1),       // 0 - 99 = -99 rem_euclid(99) = 0
+            (0, ('L', 10), 90),      // 0 - 10 = -10 rem_euclid(100) = 90
+            (10, ('R', 5), 15),      // 10 + 5 = 15
+            (98, ('L', 2), 96),      // 98 - 2 = 96
+            (1, ('R', 3), 4),        // 1 + 3 = 4
+            (0, ('R', 1), 1),        // 0 + 1 = 1
+            (99, ('L', 1), 98),      // 99 - 1 = 98
+            (99, ('R', 1), 0),       // 99 + 1 = 100 rem_euclid(100) = 0
+            (0, ('L', 99), 1),       // 0 - 99 = -99 rem_euclid(100) = 1
+            (0, ('R', 99), 99),      // 0 + 99 = 99
         ];
         for (start, instruction, expected) in cases {
             let result = apply_instructions(start, &[instruction]);
@@ -94,24 +94,24 @@ mod tests {
     #[test]
     fn test_apply_instructions_from_zero() {
         let instructions = vec![
-            ('L', 10), // 0 + 10 = 10
-            ('R', 5),  // 10 - 5 = 5
-            ('L', 94), // 5 + 94 = 99 % 99 = 0
-            ('R', 1),  // 0 - 1 = -1 rem_euclid(99) = 98
+            ('L', 10), // 0 - 10 = -10 rem_euclid(100) = 90
+            ('R', 5),  // 90 + 5 = 95
+            ('L', 94), // 95 - 94 = 1
+            ('R', 1),  // 1 + 1 = 2
         ];
         let result = apply_instructions(0, &instructions);
-        assert_eq!(result, 98);
+        assert_eq!(result, 2);
     }
 
     #[test]
     fn test_apply_instructions_from_99() {
         let instructions = vec![
-            ('R', 1),  // 99 - 1 = 98
-            ('L', 2),  // 98 + 2 = 100 % 99 = 1
-            ('R', 3),  // 1 - 3 = -2 rem_euclid(99) = 97
+            ('R', 1),  // 99 + 1 = 100 rem_euclid(100) = 0
+            ('L', 2),  // 0 - 2 = -2 rem_euclid(100) = 98
+            ('R', 3),  // 98 + 3 = 101 rem_euclid(100) = 1
         ];
         let result = apply_instructions(99, &instructions);
-        assert_eq!(result, 97);
+        assert_eq!(result, 1);
     }
 
     #[test]
