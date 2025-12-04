@@ -1,5 +1,5 @@
 [package]
-name = "aoc2025-day2"
+name = "advent_of_code_2025_day_2"
 version = "0.1.0"
 edition = "2021"
 
