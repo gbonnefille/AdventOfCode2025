@@ -47,20 +47,34 @@ fn is_invalid_2(n: u64) -> bool {
     false
 }
 
-fn main() {
-    env_logger::init();
-    let arg = std::env::args().nth(1).expect("expected argument");
-    let pairs = parse_pairs(&arg);
-    log::debug!("{pairs:?}");
+fn process<F>(pairs: Vec<(u64, u64)>, predicate: F) -> Vec<u64>
+where
+    F: Fn(u64) -> bool,
+{
     let mut invalid_numbers = Vec::new();
     for pair in pairs {
         for n in pair.0..=pair.1 {
-            if is_invalid_2(n) {
+            if predicate(n) {
                 println!("Invalid id {n}");
                 invalid_numbers.push(n);
             }
         }
     }
+    invalid_numbers
+}
+
+fn main() {
+    env_logger::init();
+    let mode = std::env::args().nth(1).expect("expected argument");
+    let pairs = std::env::args().nth(2).expect("expected argument");
+    let pairs = parse_pairs(&pairs);
+    log::debug!("{pairs:?}");
+    let predicate = match mode.as_str() {
+        "1" => is_invalid,
+        "2" => is_invalid_2,
+        _ => panic!("Unexpected")
+    };
+    let invalid_numbers =process(pairs, predicate);
     log::debug!("Invalid numbers: {:?}", invalid_numbers);
     let sum: u64 = invalid_numbers.iter().sum();
     println!("Sum: {sum}");
