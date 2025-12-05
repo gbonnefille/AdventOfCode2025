@@ -27,18 +27,21 @@ fn get_power(bank: Vec<u32>) -> u32 {
         .copied()
         .unwrap_or(0);
 
-    max1_val * 10 + max2_val
+}
+
+fn full_power(data: impl Iterator<Item = String>) -> u32 {
+          data.map(|line| {
+            let bank = extract_batteries(&line);
+            get_power(bank)
+        })
+        .sum()
 }
 
 fn main() {
     let stdin = io::stdin();
-    let sum: u32 = stdin.lock().lines()
-        .filter_map(Result::ok)
-        .map(|line| {
-            let bank = extract_batteries(&line);
-            get_power(bank)
-        })
-        .sum();
+    let data = stdin.lock().lines()
+        .filter_map(Result::ok);
+    let sum = full_power(data);
 
     println!("{}", sum);
 }
@@ -46,6 +49,20 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_full_power_part1() {
+        let input = [
+            "987654321111111",
+            "811111111111119",
+            "234234234234278",
+            "818181911112111",
+        ]
+        .iter()
+        .map(|s| s.to_string());
+        let sum = full_power(input);
+        assert_eq!(357, sum);
+    }
 
     #[test]
     fn test_get_power_with_3_digits() {
